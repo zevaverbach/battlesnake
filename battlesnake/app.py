@@ -90,6 +90,9 @@ class Board(TypedDict):
     snakes: list[Snake]
 
 
+Move = Literal["up", "down", "left", "right"]
+
+
 @app.route("/move", methods=["POST"])
 def move():
     game_info = request.get_json()
@@ -97,6 +100,17 @@ def move():
     turn: int = game_info["turn"]
     board: Board = game_info["board"]
     you: Snake = game_info["you"]
+
+    # TODO: cache active games using the ID
+    # TODO: determine the direction of all players, including yoruself
+    #   this should be possible from the start if the snakes are
+    #   all pointing straight, their heads will be at the front
+    #   and pointing the direction they're traveling in.
+    # TODO: instantiate the snake instances at the start
+
+    player_class = get_player_class(game["ruleset"]["name"])
+    player = player_class(you)
+    move: Move = player.get_move(board)
 
     return jsonify({"move": "up"})
 
